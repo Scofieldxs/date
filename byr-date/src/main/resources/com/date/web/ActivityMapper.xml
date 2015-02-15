@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.date.web.activity.dao.ActivityMapper">
+    
+ 
+
+    <insert id="insertActivities" useGeneratedKeys="true" parameterType="java.util.List">  
+        <selectKey resultType="Integer" keyProperty="id" order="AFTER">  
+            SELECT  
+            LAST_INSERT_ID()  
+        </selectKey>  
+        insert into activity (time,boy,girl,activity)   
+        values  
+        <foreach collection="list" item="item" index="index" separator="," >  
+            (#{item.time},#{item.boy},#{item.girl},#{item.act})  
+        </foreach>  
+    </insert>  
+    
+    <insert id="insertActivity" useGeneratedKeys="true" parameterType="com.date.web.activity.bo.Activity">  
+        insert into activity (time,boy,girl,activity)   
+        values (#{time},#{boy},#{girl},#{act})  
+
+    </insert>  
+    
+    <select id="getActivity" resultType="com.date.web.activity.bo.Activity" parameterType="com.date.web.dormitory.bo.Dormitory">
+        SELECT
+          time,boy,girl,t2.activity
+        FROM 
+          activity t1,dict_activity t2
+        <where>
+            t1.activity=t2.id
+            <if test="gender==1">
+                and boy=#{id,jdbcType=INTEGER}
+            </if>
+            <if test="gender==0">
+                and girl=#{id,jdbcType=INTEGER}
+            </if>
+        </where> 
+        limit 1
+    </select>
+    
+    
+    
+    
+    
+
+</mapper>

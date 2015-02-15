@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.date.web.dormitory.dao.DormitoryMapper">
+    <!-- <resultMap id="BaseResultMap" type="com.date.web.dormitory.vo.DormitoryVo">
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="city" property="cityId" jdbcType="INTEGER" />
+        <result column="city" property="city" jdbcType="VARCHAR" />
+        <result column="school" property="schoolId" jdbcType="INTEGER" />
+        <result column="school" property="school" jdbcType="VARCHAR" />
+        <result column="grade" property="gradeId" jdbcType="INTEGER" />
+        <result column="grade" property="grade" jdbcType="VARCHAR" />
+        <result column="major" property="majorId" jdbcType="INTEGER" />
+        <result column="major" property="major" jdbcType="VARCHAR" />
+        <result column="qq" property="qq" jdbcType="VARCHAR" /> 
+        <result column="identified" property="identified" jdbcType="INTEGER" />
+        <result column="gender" property="gender" jdbcType="INTEGER" /> 
+               
+    </resultMap> -->
+    
+    <resultMap id="PersonResultMap" type="com.date.web.dormitory.bo.Person">
+        <result column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="dormitory" property="dormitory" jdbcType="INTEGER" />
+        <result column="single" property="single" jdbcType="INTEGER" />
+        <result column="picture" property="picture" jdbcType="BLOB" />       
+    </resultMap>
+
+       
+
+    <select id="getDormitoryVo" resultType="com.date.web.dormitory.vo.DormitoryVo" parameterType="java.lang.Long">
+        SELECT 
+          a.id,b.city,c.school,d.grade,e.major,a.qq,a.identified,a.gender
+        FROM dormitory a,dict_city b,dict_school c,dict_grade d,dict_major e
+        WHERE a.id=#{id} and a.city=b.id and a.school=c.id and a.grade=d.id and a.major=e.id
+    </select>
+    
+    <select id="getPersons" resultMap="PersonResultMap" parameterType="java.lang.Long">
+        SELECT
+          id,name,dormitory,single,picture
+        FROM person
+        WHERE dormitory=#{id}
+    </select>
+    
+    <insert id="insertDormitory" useGeneratedKeys="true" parameterType="com.date.web.dormitory.vo.DormitoryVo">  
+        <selectKey resultType="Integer" keyProperty="id" order="AFTER">  
+            SELECT  
+            LAST_INSERT_ID()  
+        </selectKey>  
+        insert into dormitory (city,school,gender,grade,major,identified,qq)   
+        values (#{cityId},#{schoolId},#{gender},#{gradeId},#{majorId},#{identified},#{qq})         
+    </insert>  
+    
+    <update id="updateDormitory" parameterType="com.date.web.dormitory.vo.DormitoryVo">
+        update dormitory set city=#{cityId},school=#{schoolId},gender=#{gender},grade=#{gradeId},major=#{majorId},identified#{identified},qq=#{qq}
+        where id=#{id}
+    </update>
+    
+    <insert id="insertPerson" useGeneratedKeys="true" parameterType="com.date.web.dormitory.bo.Person">  
+        <selectKey resultType="Integer" keyProperty="id" order="AFTER">  
+            SELECT  
+            LAST_INSERT_ID()  
+        </selectKey>  
+        insert into person (name,dormitory,single,picture)   
+        values (#{name},#{dormitory},#{single},#{picture})         
+    </insert>
+    
+     <update id="updatePerson" parameterType="com.date.web.dormitory.bo.Person">
+        update person set name=#{name},dormitory=#{dormitory},single=#{single},picture=#{picture}
+        where id=#{id}
+    </update>
+    
+    <insert id="insertPersons" useGeneratedKeys="true" parameterType="com.date.web.dormitory.bo.Person">  
+        <selectKey resultType="Integer" keyProperty="id" order="AFTER">  
+            SELECT  
+            LAST_INSERT_ID()  
+        </selectKey>  
+        insert into person (name,dormitory,single,picture)   
+        values
+        <foreach collection="list" item="item" index="index" separator="," >  
+            (#{item.name},#{item.dormitory},#{item.single},#{item.picture})  
+        </foreach>        
+    </insert>
+    
+    <select id="findPerson" resultMap="PersonResultMap" parameterType="com.date.web.dormitory.bo.Person">
+        SELECT id,name,dormitory,single,picture
+        FROM person
+        WHERE id=#{id}
+    </select>
+    
+    
+    <select id="getDormitory" resultType="com.date.web.dormitory.bo.Dormitory" parameterType="java.lang.Long">
+        SELECT id,city,school,gender,grade,major,identified,qq
+        FROM dormitory
+        WHERE id=#{id}
+    </select>
+    
+
+</mapper>

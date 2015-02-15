@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.date.web.plan.dao.PlanMapper">
+    <resultMap id="BaseResultMap" type="com.date.web.plan.bo.Plan">
+        <result column="dormitory" property="dormitory" jdbcType="INTEGER" />
+        <result column="time" property="time" jdbcType="DATE" />
+        <result column="activity" property="actId" jdbcType="INTEGER" />
+        <result column="gender" property="gender" jdbcType="INTEGER" />        
+    </resultMap>
+
+      
+
+    
+    <insert id="insertPlan" useGeneratedKeys="true" keyProperty="id" parameterType="com.date.web.plan.bo.Plan">
+        insert into plan(dormitory,time,activity) values(#{dormitory},#{time},#{actId})
+    </insert>
+    
+    <delete id="removePlan" parameterType="java.lang.Long">
+        delete from plan where dormitory=#{domId}
+    </delete>
+    
+    <select id="matchPlan" resultMap="BaseResultMap" parameterType="com.date.web.plan.bo.Plan">
+        SELECT time,activity,dormitory,gender
+        FROM plan a , dormitory b
+        WHERE a.activity=#{actId} and a.time=#{time} and a.dormitory=b.id
+        <if test="gender == 1">
+            and b.gender=0          
+        </if>
+        <if test="gender == 0">
+            and b.gender=1          
+        </if>
+        order by a.id desc
+        limit 1
+    </select>
+    
+    
+    
+    <select id="getPlanById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT time,activity,dormitory,gender
+        FROM plan a , dormitory b
+        WHERE id=#{id,jdbcType=INTEGER} and a.dormitory=b.id
+    </select>
+    
+    <select id="getPlans" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT time,activity,dormitory,gender
+        FROM plan a , dormitory b
+        WHERE a.dormitory=b.id and b.gender=#{gender,jdbcType=INTEGER}
+    </select>
+    
+    <select id="">
+        select time,activity,dormitory
+        from plan a,dormitory b
+        where a.time=#{time} and a.activity=#{activity} 
+        <if test="gender == 1">
+            and b.gender=0          
+        </if>
+        <if test="gender == 0">
+            and b.gender=1          
+        </if>
+    </select>
+    
+    
+    
+    <insert id="insertPlans" useGeneratedKeys="true" parameterType="java.util.List">  
+	    <selectKey resultType="Integer" keyProperty="id" order="AFTER">  
+	        SELECT  
+	        LAST_INSERT_ID()  
+	    </selectKey>  
+	    insert into plan (time,activity,dormitory)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	        (#{item.time},#{item.actId},#{item.dormitory})  
+	    </foreach>  
+    </insert>  
+    
+    
+
+</mapper>
